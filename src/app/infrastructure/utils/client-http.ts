@@ -1,6 +1,6 @@
 const defaulUrl =
-  "https://vacantsbackendgates-production.up.railway.app/api/v1";
-  
+  "https://beautysalongates-production.up.railway.app/api/v1";
+
 export class HttpClient {
   private baseUrl: string;
   constructor(baseUrl?: string) {
@@ -8,13 +8,15 @@ export class HttpClient {
   }
   private async getHeader() {
     return {
+      //si esta autenticado
       "Content-Type": "application/json",
+       // "Autorizaiton": "Berarer token"
     };
   }
   private async handleResponse(response: Response) {
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || "Error en la peticion");
+      throw errorData;
     }
     if(response.status === 204) {
       return true
