@@ -6,48 +6,53 @@ import CredentialsProvider from "next-auth/providers/credentials";
 interface AuthToken {
   id?: string;
   token?: string;
+  photo?: string;
+  role?:string
 }
 interface AuthUser {
   id: string;
-  name: string;
   email: string;
+  role:string
   token: string;
+  photo: string;
 }
-interface CustomSession extends Session {
+export interface CustomSession extends Session {
   user: {
     id?: string;
     token?: string;
-    name?: string | null;
+    role?: string | null;
     email?: string | null;
-    image?: string | null;
+    photo?: string | null;
   };
 }
 
-const authOptions: NextAuthOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        username: { label: "Correo Electrónico", type: "text" },
+        email: { label: "Correo Electrónico", type: "text" },
         password: { label: "Contraseña", type: "password" },
       },
       authorize: async (credentials) => {
-        if (!credentials?.password || !credentials.username){
+        if (!credentials?.password || !credentials.email){
                 console.error("Credenciales faltantes")
             return null
         } 
         const loginRequest: ILoginRequest =  {
             password: credentials.password,
-            userName: credentials.username
+            email: credentials.email
         }
         try {
             const authService = new AuthService()
             const response = await authService.login(loginRequest)
+            const subId:string = response.data.user.sub.toString()
             return {
-                email: loginRequest.userName,
-                id:  loginRequest.userName,
-                name: loginRequest.userName,
-                token: response.token
+              email: response.data.user.email,
+              id:subId,
+              role: response.data.user.role,
+              photo: response.data.user.photo,
+              token: response.data.access_token,
             } as AuthUser
             
         } catch (error) {
@@ -68,6 +73,9 @@ const authOptions: NextAuthOptions = {
         const authUser = user as AuthUser;
         token.id = authUser.id;
         token.token = authUser.token;
+        // token.email = authUser.email;
+        token.photo = authUser.photo;
+        token.role = authUser.role;
       }
       return token;
     },
@@ -75,10 +83,12 @@ const authOptions: NextAuthOptions = {
       const customSession = session as CustomSession;
       customSession.user.id = (token as AuthToken).id;
       customSession.user.token = (token as AuthToken).token;
+      customSession.user.role = (token as AuthToken).role;
+      customSession.user.photo = (token as AuthToken).photo;
       return customSession;
     },
   },
 };
-export default NextAuth(authOptions);
+// export default NextAuth(authOptions);
 export const GET = NextAuth(authOptions);
 export const POST = NextAuth(authOptions);

@@ -1,15 +1,17 @@
 "use client"
 
-import { ErrorResponse, FieldError, ILoginRequest } from "@/app/core/application/dto";
+import { ILoginRequest } from "@/app/core/application/dto";
+import { Button } from "@/ui/atoms/Button";
 import { FormField } from "@/ui/molecules";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { signIn } from "next-auth/react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 
 const loginSchema = yup.object().shape({
-  userName: yup
+  email: yup
     .string()
     .email("El correo es inválido")
     .required("El correo el obligatorio"),
@@ -23,7 +25,7 @@ export const LoginForm = () => {
   const {
     control,
     handleSubmit,
-    setError,
+    // setError,
     formState: { errors },
   } = useForm<ILoginRequest>({
     mode: "onChange",
@@ -39,15 +41,16 @@ export const LoginForm = () => {
     try {
       const result = await signIn("credentials", {
         redirect: false,
-        username: data.userName,
+        email: data.email,
         password: data.password,
       });
 
-      console.log(result);
+      console.log(`result`, result);
 
       if (result?.error) {
         console.log("Ocurrio un error", JSON.parse(result.error));
-        handleError(JSON.parse(result.error))
+        JSON.parse(result.error)
+        // handleError(JSON.parse(result.error))
         return;
       }
       router.push("/dashboard/services")
@@ -56,35 +59,36 @@ export const LoginForm = () => {
     }
   };
 
-  const handleError = (error: unknown) => {
-    const erroData = error as ErrorResponse;
-    if (erroData && erroData.errors) {
-      if (Array.isArray(erroData.errors) && "field" in erroData.errors[0]) {
-        erroData.errors.forEach((fieldError) => {
-          const { field, error } = fieldError as FieldError;
-          setError(field as keyof ILoginRequest, {
-            message: error,
-          });
-        });
-      } else {
-        if ("message" in erroData.errors[0]) {
-          setError("userName", {
-            message: erroData.errors[0].message,
-          });
-        }
-      }
-    }
-  };
+  // const handleError = (error: unknown) => {
+  //   const erroData = error as ErrorResponse;
+  //   if (erroData && erroData.errors) {
+  //     if (Array.isArray(erroData.errors) && "field" in erroData.errors[0]) {
+  //       erroData.errors.forEach((fieldError) => {
+  //         const { field, error } = fieldError as FieldError;
+  //         setError(field as keyof ILoginRequest, {
+  //           message: error,
+  //         });
+  //       });
+  //     } else {
+  //       if ("message" in erroData.errors[0]) {
+  //         setError("email", {
+  //           message: erroData.errors[0].message,
+  //         });
+  //       }
+  //     }
+  //   }
+  // };
 
   return (
     <form className="w-full max-w-sm mx-auto p-4 space-y-4" onSubmit={handleSubmit(handleLogin)}>
       <h2 className="text-2xl font-semibold  text-center">Iniciar Sesión</h2>
+      <p className="text-xs text-center">Ingresa tus credenciales para acceder a tu cuenta</p>
       <FormField<ILoginRequest>
         control={control}
         type="email"
         label="Correo Electrónico"
-        name="userName"
-        error={errors.userName}
+        name="email"
+        error={errors.email}
         placeholder="Ingresa tu correo"
       />
       <FormField<ILoginRequest>
@@ -95,12 +99,15 @@ export const LoginForm = () => {
         error={errors.password}
         placeholder="Ingresa tu contraseña"
       />
-      <button
+      {/* <button
         type="submit"
-        className="w-full py-2 px-4 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600"
+        className="w-full py-2 px-4 bg-black text-white rounded-lg font-medium hover:bg-gray-800"
       >
         Iniciar Sesión
-      </button>
+      </button> */}
+      <Button text="Iniciar Sesión" className="w-full"/>
+      <p className="text-xs text-center text-blue-500">¿Olvidaste tu contraseña?</p>
+      <p className="text-xs text-center">¿No tienes una cuenta? <Link href="/register"> <span className="text-xs text-center text-blue-500">Registrate aquí</span></Link></p>
     </form>
   );
 };

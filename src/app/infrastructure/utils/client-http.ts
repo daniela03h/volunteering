@@ -1,18 +1,38 @@
+import { authOptions, CustomSession } from "@/app/api/auth/[...nextauth]/route";
+import { getServerSession } from "next-auth";
+
 const defaulUrl =
-  "https://beautysalongates-production.up.railway.app/api/v1";
+  "https://communnityvolunteering-production.up.railway.app/api/v1";
 
 export class HttpClient {
   private baseUrl: string;
   constructor(baseUrl?: string) {
     this.baseUrl = baseUrl || defaulUrl;
   }
-  private async getHeader() {
-    return {
-      //si esta autenticado
-      "Content-Type": "application/json",
-       // "Autorizaiton": "Berarer token"
-    };
+
+  // private async getHeader() {
+  //   return {
+  //     //si esta autenticado
+  //     "Content-Type": "application/json",
+  //      // "Autorizaiton": "Berarer token"
+  //   };
+  // }
+  
+private async getHeader(formData:boolean=false) {
+    const session = (await getServerSession(authOptions)) as CustomSession  | null;
+
+    const headers: HeadersInit = {  };
+    if (formData === false) {
+      headers["Content-Type"] = "application/json";
+    } 
+
+    if (session?.user?.token) {
+      headers["Authorization"] = `Bearer ${session.user.token}`;
+    }
+  
+    return headers;
   }
+
   private async handleResponse(response: Response) {
     if (!response.ok) {
       const errorData = await response.json();
@@ -29,12 +49,10 @@ export class HttpClient {
       headers: headers,
       method: "GET",
       cache: "no-cache"
-      // next: {
-      //   revalidate: 0
-      // }
     });
     return this.handleResponse(response);
   }
+
   async post<T, B>(url: string, body: B): Promise<T> {
     const headers = await this.getHeader();
     const response = await fetch(`${this.baseUrl}/${url}`, {
@@ -44,6 +62,15 @@ export class HttpClient {
     });
     return this.handleResponse(response);
   }
+
+  async postBinary<T>(url:string, body: FormData): Promise<T> {
+    const response = await fetch(`${this.baseUrl}/${url}`, {
+      method: "POST",
+      body:body,
+    });
+    return this.handleResponse(response);
+  }
+
   async put<T, B>(url: string, body: B): Promise<T> {
     const headers = await this.getHeader();
     const response = await fetch(`${this.baseUrl}/${url}`, {

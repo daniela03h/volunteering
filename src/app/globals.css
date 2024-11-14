@@ -1,3 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+ .bg-miColorGradient {
+  background: linear-gradient(180deg, rgba(219, 234, 253, 1) 21%, rgba(243, 251, 255, 1) 56%, rgba(255, 255, 255, 1) 100%);
+}
