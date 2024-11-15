@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-
-import { IRegisterRequest, IRegisterResponse } from "@/app/core/application/dto";
+import { ChangeEvent } from "react";
+import { IRegisterRequest } from "@/app/core/application/dto";
 import { RegisterService } from "@/app/infrastructure/services/register.service";
 import { Button } from "@/ui/atoms/Button";
 import { FormField } from "@/ui/molecules";
@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 
-const registerService = new RegisterService()
+const registerService = new RegisterService('/api');
 
 const registerSchema = yup.object().shape({
   email: yup
@@ -22,14 +22,15 @@ const registerSchema = yup.object().shape({
     .string()
     .min(8, "La contraseña debe tener  al menos 8  caracteres")
     .required("La contraseña es obligatoria"),
-  name: yup
-    .string()
-    .required("El nombre del usuario es obligatoria"),
-  role: yup
-    .string()
-    .required("El rol es obligatorio"),
-  photo: yup
-    .string()
+  name: yup.string().required("El nombre del usuario es obligatoria"),
+  role: yup.string().required("El rol es obligatorio"),
+  photo: yup.mixed<File>(),
+  // .test('fileSize', 'El archivo es demasiado grande', value => {
+  //   return value && value.size <= 204800;
+  // })
+  // .test('fileType', 'Solo se permiten archivos JPG o PNG', value => {
+  //   return value && !['image/jpeg', 'image/png', 'image/jpg', 'image/gif'].includes(value.type);
+  // })
 });
 
 export const RegisterForm = () => {
@@ -37,19 +38,51 @@ export const RegisterForm = () => {
     control,
     handleSubmit,
     // setError,
+    setValue,
+    getValues,
     formState: { errors },
-  } = useForm<IRegisterResponse>({
+  } = useForm<IRegisterRequest>({
     mode: "onChange",
     reValidateMode: "onChange",
     resolver: yupResolver(registerSchema),
   });
 
+  const router = useRouter()
 
+  const handleRegister = async (data: IRegisterRequest) => {
+    const formData = new FormData();
+    console.log(data);
+
+    formData.append("email", data.email);
+    formData.append("password", data.password);
+    formData.append("name", data.name);
+    formData.append("role", data.role);
+
+    const image = getValues("photo")
+    if (image) {
+      formData.append("photo", image!);
+    }
+
+    const response = await registerService.register(formData)
+    router.push("/login")
+    console.log(response);
+  };
+
+  const onChange = (e:ChangeEvent<HTMLInputElement> ) => {
+    if (e.target.files?.[0]) {
+      setValue("photo", e.target.files[0]);
+    }
+  };
 
   return (
-    <form className="w-full max-w-sm mx-auto p-4 space-y-4" onSubmit={handleSubmit(handleLogin)}>
+    <form
+      className="w-full max-w-sm mx-auto p-4 space-y-4"
+      onSubmit={handleSubmit(handleRegister)}
+    >
       <h2 className="text-2xl font-semibold  text-center">Crea tu cuenta</h2>
-      <p className="text-xs text-center">Ingresa tus datos para registrarte a tu cuenta</p>
+      <p className="text-xs text-center">
+        Ingresa tus datos para registrarte a tu cuenta
+      </p>
       <FormField<IRegisterRequest>
         control={control}
         type="email"
@@ -82,9 +115,17 @@ export const RegisterForm = () => {
         error={errors.role}
         placeholder="Ingresa tu Rol"
       />
-      <input type="file"/>
-      <Button text="Registrarse" className="w-full"/>
-      <p className="text-xs text-center">¿Tienes una cuenta? <Link href="/login"> <span className="text-xs text-center text-blue-500">Ingresa aquí</span></Link></p>
+      <input type="file" onChange={onChange} />
+      <Button type="submit" text="Registrarse"/>
+      <p className="text-xs text-center">
+        ¿Tienes una cuenta?{" "}
+        <Link href="/login">
+          {" "}
+          <span className="text-xs text-center text-blue-500">
+            Ingresa aquí
+          </span>
+        </Link>
+      </p>
     </form>
   );
 };

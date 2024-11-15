@@ -8,6 +8,6 @@ export interface RegisterData {
   email: string;
   name:  string;
   role:  string;
-  photo: null;
+  photo: string | null;
   id:    number;
 }

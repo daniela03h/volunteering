@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const url = `/users`
+const url = `https://communnityvolunteering-production.up.railway.app/api/v1/users`
 
 export async function POST (request: Request){
     const client = await request.formData()

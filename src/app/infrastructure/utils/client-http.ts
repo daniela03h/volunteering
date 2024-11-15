@@ -17,19 +17,21 @@ export class HttpClient {
   //      // "Autorizaiton": "Berarer token"
   //   };
   // }
-  
-private async getHeader(formData:boolean=false) {
-    const session = (await getServerSession(authOptions)) as CustomSession  | null;
 
-    const headers: HeadersInit = {  };
+  async getHeader(formData: boolean = false) {
+    const session = (await getServerSession(
+      authOptions
+    )) as CustomSession | null;
+
+    const headers: HeadersInit = {};
     if (formData === false) {
       headers["Content-Type"] = "application/json";
-    } 
+    }
 
     if (session?.user?.token) {
       headers["Authorization"] = `Bearer ${session.user.token}`;
     }
-  
+
     return headers;
   }
 
@@ -38,8 +40,8 @@ private async getHeader(formData:boolean=false) {
       const errorData = await response.json();
       throw errorData;
     }
-    if(response.status === 204) {
-      return true
+    if (response.status === 204) {
+      return true;
     }
     return await response.json();
   }
@@ -48,7 +50,7 @@ private async getHeader(formData:boolean=false) {
     const response = await fetch(`${this.baseUrl}/${url}`, {
       headers: headers,
       method: "GET",
-      cache: "no-cache"
+      cache: "no-cache",
     });
     return this.handleResponse(response);
   }
@@ -63,10 +65,10 @@ private async getHeader(formData:boolean=false) {
     return this.handleResponse(response);
   }
 
-  async postBinary<T>(url:string, body: FormData): Promise<T> {
+  async postBinary<T>(url: string, body: FormData): Promise<T> {
     const response = await fetch(`${this.baseUrl}/${url}`, {
       method: "POST",
-      body:body,
+      body: body,
     });
     return this.handleResponse(response);
   }
@@ -81,9 +83,7 @@ private async getHeader(formData:boolean=false) {
     return this.handleResponse(response);
   }
   async delete<T>(url: string): Promise<T> {
-    const headers = await this.getHeader();
     const response = await fetch(`${this.baseUrl}/${url}`, {
-      headers: headers,
       method: "DELETE",
     });
     return this.handleResponse(response);
