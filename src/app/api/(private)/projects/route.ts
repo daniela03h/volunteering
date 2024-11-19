@@ -1,14 +1,21 @@
-import { NextResponse, NextRequest } from "next/server";
+import { HttpClient } from "@/app/infrastructure/utils/client-http";
+import { NextResponse } from "next/server";
 
-const url = `https://communnityvolunteering-production.up.railway.app/api/v1/projects`;
+const url = `${process.env.NEXT_PUBLIC_HOST}/projects`
+console.log("URL de la API:", url);
 
-export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams;
-  const page = parseInt(searchParams.get("page") || "1");
-  const size = parseInt(searchParams.get("size") || "5");
-  const response = await fetch(`${url}?page=${page}&size=${size}`, {
-    method: "GET",
-  });
-  const data = await response.json();
-  return NextResponse.json(data, { status: response.status });
+const useHttpClient = new HttpClient();
+
+export async function POST (request: Request){
+    const client = await request.json()
+    const headers = await useHttpClient.getHeader();
+    const response = await fetch(url,{
+        method : 'POST',
+        headers: headers,
+        body: JSON.stringify(client)
+    });
+    const data = await response.json();
+    return NextResponse.json(data, { status: response.status });
 }
+
+console.log("URL de la API:", url);

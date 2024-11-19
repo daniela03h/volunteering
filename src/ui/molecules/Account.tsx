@@ -5,7 +5,7 @@ const Account = () => {
   return (
     <div className="flex gap-4 items-center">
       <Image
-        className="rounded-full border-2 border-red-500"
+        className="rounded-full border-2"
         src=""
         alt="avatar"
         width={40}

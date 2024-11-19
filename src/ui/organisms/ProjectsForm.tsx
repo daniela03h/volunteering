@@ -5,13 +5,13 @@ import { ProjectsService } from "@/app/infrastructure/services/projects.service"
 import { Button } from "@/ui/atoms/Button";
 import { FormField } from "@/ui/molecules";
 import { yupResolver } from "@hookform/resolvers/yup";
-import Link from "next/link";
-// import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 
 interface IProps{
   action:string;
+  projectSelected?: IProjectsRequest;
   idProject?: number
   propFunction: ()=>void
 }
@@ -26,39 +26,47 @@ const projectsSchema = yup.object().shape({
     .string()
     .required("Descripcion del proyecto"),
   startDate: yup
-    .string()
-    .required("El nombre del usuario es obligatoria"),
+    .date()
+    .required("La fecha de inicio del proyecto es requerida")
+    .min(new Date(), "La fecha no puede ser anterior a hoy"),
   endDate: yup
-    .string()
-    .required("El rol es obligatorio"),
+    .date()
+    .required("La fecha de finalización del proyecto es requerida")
+    .min(
+      yup.ref('startDate'), 
+      "La fecha de fin no puede ser anterior a la fecha de inicio"
+    )
 });
 
 export const ProjectsForm:React.FC<IProps> = ({action, idProject, propFunction}) => {
   const {
     control,
     handleSubmit,
-    // setError,
     formState: { errors },
   } = useForm<IProjectsRequest>({
     mode: "onChange",
     reValidateMode: "onChange",
     resolver: yupResolver(projectsSchema),
   });
+  const router = useRouter();
 
   const handlePost = async (data :IProjectsRequest)=>{    
-  
+    await projectsService.createProjects('projects',data);
+    propFunction();
+    router.refresh();
   } 
 
   const handleEdit = async (data:IProjectsRequest) =>{
-  
+    await projectsService.editProject('projects',idProject!, data);
+    propFunction();
+    router.refresh();
   }
   
 const onSubmit = action === 'add' ? handlePost : handleEdit;
 
   return (
     <form className="w-full max-w-sm mx-auto p-4 space-y-4" onSubmit={handleSubmit(onSubmit)}>
-      <h2 className="text-2xl font-semibold  text-center">Crea tu cuenta</h2>
-      <p className="text-xs text-center">Ingresa tus datos para registrarte a tu cuenta</p>
+      <h2 className="text-2xl font-semibold  text-center">{action === 'add' ? 'Publicar' : 'Editar'} proyecto</h2>
       <FormField<IProjectsRequest>
         control={control}
         type="text"

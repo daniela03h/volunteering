@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -6,13 +6,13 @@ import IconButton from "../atoms/IconButon";
 import { IProjectsGetResponse } from "@/app/core/application/dto/projects/projects-get-response";
 
 interface IProps {
-  data: IProjectsGetResponse
+  data: IProjectsGetResponse;
 }
 
 export default function Pagination({ data }: IProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  
+
   const onPageChange = (newPage: number) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("page", newPage.toString());
@@ -22,8 +22,12 @@ export default function Pagination({ data }: IProps) {
   const currentPage = data.metadata.currentPage;
 
   return (
-    <div>
-      <IconButton onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1}>
+    <div className="flex gap-1 justify-center items-center">
+      <IconButton
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="bg-black text-white rounded-full p-1"
+      >
         <IoChevronBack />
       </IconButton>
       <p>Pagina </p>
@@ -32,7 +36,9 @@ export default function Pagination({ data }: IProps) {
       <p>{data.metadata.totalPages}</p>
       <IconButton
         onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === data.metadata.totalPages}>
+        disabled={currentPage === data.metadata.totalPages}
+        className="bg-black text-white rounded-full p-1"
+      >
         <IoChevronForward />
       </IconButton>
     </div>

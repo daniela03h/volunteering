@@ -1,11 +1,12 @@
 import { IProjectsGetResponse } from "@/app/core/application/dto/projects/projects-get-response";
-import { errorAlert, HttpClient, successAlert } from "../utils";
+import { HttpClient} from "../utils";
+import { IProjectsRequest } from "@/app/core/application/dto/projects/projects-request";
 
 export class ProjectsService{
     private httpClient: HttpClient;
 
     constructor(){
-        this.httpClient = new HttpClient(`${process.env.NEXT_PUBLIC_HOST}/api`);
+        this.httpClient = new HttpClient();
     }
 
     async findAllProjects(page: number, size: number){
@@ -18,14 +19,14 @@ export class ProjectsService{
         }
     }
 
-    async postProjects(url:string, body){
+    async createProjects(url:string, body:IProjectsRequest){
         try{
             const newProject = await this.httpClient.post(url,body);
-            successAlert('Se creo exitosamente');
+            alert('Se creo exitosamente');
             return newProject;
         }catch(error){
             console.log(error);
-            errorAlert("No se pudo crear el proyecto")
+            alert("No se pudo crear el proyecto")
             throw error
         }
     }
@@ -40,16 +41,15 @@ export class ProjectsService{
         }
     }
 
-    async editProject (url:string, id:number, body){
+    async editProject (url:string, id:number, body:IProjectsRequest){
         try{
-            const projectEdited =  await this.httpClient.patch(`${url}/${id}`, body);
-            successAlert('Editado exitosamente');
+            const projectEdited =  await this.httpClient.put(`${url}/${id}`, body);
+            alert('Editado exitosamente');
             return projectEdited;
 
         } catch(error){
             console.log(error);
             throw error;
-
         }
     }
 }

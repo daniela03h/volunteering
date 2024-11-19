@@ -27,7 +27,7 @@ export const ContainerActions: React.FC<ITdActions> = ({ data }) => {
 
   return (
     <div className="flex gap-2">
-      <Button text="Editar" onClick={() => setModal(true)} />
+      <Button text="Editar" color="secondary" onClick={() => setModal(true)} />
       <Button
         text="Eliminar"
         color="danger"

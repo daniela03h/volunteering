@@ -13,8 +13,8 @@ export const Header = () => {
   const handleCloseModal = () => setModal(false);
 
   return (
-    <header className="border-2 border-red flex justify-between items-center px-4">
-      <h2 className="font-bold">Dashboard de proyectos</h2>
+    <header className="flex justify-between items-center px-8 py-2 bg-white ">
+      <h2 className="font-bold text-xl">Dashboard de proyectos</h2>
       <div className="flex gap-4">
           <Button text="Descargar reporte" icon={<IoDocumentTextOutline color="white" /> }/>
           <Button text="Nuevo Proyecto" onClick={() => setModal(true)} icon={<IoMdAddCircleOutline />}/>
