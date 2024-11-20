@@ -4,3 +4,7 @@ export interface IProjectsRequest{
   startDate:   Date;
   endDate:     Date;
 }
+
+export interface IProjectEditRequest extends IProjectsRequest {
+  id: number
+}

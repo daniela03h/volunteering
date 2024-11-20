@@ -12,22 +12,29 @@ interface ITdActions {
   data: IProjectsData;
 }
 
-const useProjectsService = new ProjectsService('/api');
+const projectService = new ProjectsService('/api');
 
 export const ContainerActions: React.FC<ITdActions> = ({ data }) => {
+  const [initialData, setInitialData] = useState<IProjectsData>();
   const [modal, setModal] = useState(false);
   const handleCloseModal = () => setModal(false);
   const router = useRouter();
 
+  const handleEdit = async (id: number) => {
+    const projectToEdit = await projectService.getById(id);
+    setInitialData(projectToEdit.data)
+    setModal(true);
+  }
+
   const handleDelete = async (id: number) => {
-    const projectToDelete = await useProjectsService.deleteProject(id);
+    const projectToDelete = await projectService.deleteProject(id);
     router.refresh();
     return projectToDelete;
   };
 
   return (
     <div className="flex gap-2">
-      <Button text="Editar" color="secondary" onClick={() => setModal(true)} />
+      <Button text="Editar" color="secondary" onClick={() => handleEdit(data.id)} />
       <Button
         text="Eliminar"
         color="danger"
@@ -35,8 +42,8 @@ export const ContainerActions: React.FC<ITdActions> = ({ data }) => {
       />
 
       {modal && (
-        <Modal propFunction={handleCloseModal}>
-          <ProjectsForm action="edit" propFunction={handleCloseModal} />
+        <Modal onClose={handleCloseModal}>
+          <ProjectsForm action="edit" onClose={handleCloseModal} initialData={initialData} />
         </Modal>
       )}
     </div>

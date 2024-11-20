@@ -43,8 +43,6 @@ export const LoginForm = () => {
         password: data.password,
       });
 
-      console.log(`result`, result);
-
       if (result?.error) {
         console.log("Ocurrio un error", JSON.parse(result.error));
         JSON.parse(result.error)

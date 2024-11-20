@@ -20,8 +20,8 @@ export const Header = () => {
           <Button text="Nuevo Proyecto" onClick={() => setModal(true)} icon={<IoMdAddCircleOutline />}/>
           <Account />
         {modal && (
-          <Modal propFunction={handleCloseModal}>
-            <ProjectsForm action="add" propFunction={handleCloseModal} />
+          <Modal onClose={handleCloseModal}>
+            <ProjectsForm action="add" onClose={handleCloseModal} />
           </Modal>
         )}
       </div>

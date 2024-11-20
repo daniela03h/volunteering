@@ -1,4 +1,4 @@
-import { IProjectsGetResponse } from "@/app/core/application/dto/projects/projects-get-response";
+import { IProjectsGetResponse, IProjectGetResponse } from "@/app/core/application/dto/projects/projects-get-response";
 import { HttpClient} from "../utils";
 import { IProjectsRequest } from "@/app/core/application/dto/projects/projects-request";
 
@@ -7,6 +7,16 @@ export class ProjectsService{
 
     constructor(baseUrl?: string){
         this.httpClient = new HttpClient(baseUrl);
+    }
+
+    async getById(id: number){
+        try{
+            const response = this.httpClient.get<IProjectGetResponse>(`projects/${id}`);
+            return response
+        } catch(error){
+            console.log(error);
+            throw error;
+        }
     }
 
     async findAllProjects(page: number, size: number){
@@ -41,9 +51,9 @@ export class ProjectsService{
         }
     }
 
-    async editProject (url:string, id:number, body:IProjectsRequest){
+    async editProject (id:number, body:IProjectsRequest){
         try{
-            const projectEdited =  await this.httpClient.put(`${url}/${id}`, body);
+            const projectEdited =  await this.httpClient.patch(`projects/${id}`, body);
             alert('Editado exitosamente');
             return projectEdited;
 

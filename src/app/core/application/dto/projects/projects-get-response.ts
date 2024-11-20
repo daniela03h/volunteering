@@ -5,6 +5,12 @@ export interface IProjectsGetResponse {
   metadata:   Metadata;
 }
 
+export interface IProjectGetResponse {
+  statusCode: number;
+  message:    string;
+  data:       IProjectsData;
+}
+
 export interface IProjectsData {
   id:          number;
   title:       string;

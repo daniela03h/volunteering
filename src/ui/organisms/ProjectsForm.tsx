@@ -1,6 +1,9 @@
 "use client";
 
-import { IProjectsRequest } from "@/app/core/application/dto/projects/projects-request";
+import {
+  IProjectsRequest,
+  IProjectEditRequest,
+} from "@/app/core/application/dto/projects/projects-request";
 import { ProjectsService } from "@/app/infrastructure/services/projects.service";
 import { Button } from "@/ui/atoms/Button";
 import { FormField } from "@/ui/molecules";
@@ -11,9 +14,8 @@ import * as yup from "yup";
 
 interface IProps {
   action: string;
-  projectSelected?: IProjectsRequest;
-  idProject?: number;
-  propFunction: () => void;
+  onClose: () => void;
+  initialData?: IProjectEditRequest;
 }
 
 const projectsService = new ProjectsService(`/api`);
@@ -36,8 +38,8 @@ const projectsSchema = yup.object().shape({
 
 export const ProjectsForm: React.FC<IProps> = ({
   action,
-  idProject,
-  propFunction,
+  onClose,
+  initialData,
 }) => {
   const {
     control,
@@ -47,18 +49,26 @@ export const ProjectsForm: React.FC<IProps> = ({
     mode: "onChange",
     reValidateMode: "onChange",
     resolver: yupResolver(projectsSchema),
+    defaultValues: {
+      title: initialData?.title ?? "",
+      description: initialData?.description ?? "",
+      startDate: initialData?.startDate ?? new Date(),
+      endDate: initialData?.endDate ?? new Date(),
+    },
   });
+
   const router = useRouter();
 
   const handlePost = async (data: IProjectsRequest) => {
     await projectsService.createProjects(data);
-    propFunction();
+    onClose();
     router.refresh();
   };
 
   const handleEdit = async (data: IProjectsRequest) => {
-    await projectsService.editProject("projects", idProject!, data);
-    propFunction();
+    if (!initialData?.id) return;
+    await projectsService.editProject(initialData.id, data);
+    onClose();
     router.refresh();
   };
 
