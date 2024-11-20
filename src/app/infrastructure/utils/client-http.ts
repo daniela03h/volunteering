@@ -37,7 +37,6 @@ export class HttpClient {
     }
     return await response.json();
   }
-  
   async get<T>(url: string): Promise<T> {
     const headers = await this.getHeader();
     const response = await fetch(`${this.baseUrl}/${url}`, {
@@ -51,12 +50,8 @@ export class HttpClient {
   async post<T, B>(url: string, body: B): Promise<T> {
     const response = await fetch(`${this.baseUrl}/${url}`, {
       method: "POST",
-      headers: {
-        "Content-Type": "Application/json",
-      },
       body: JSON.stringify(body),
     });
-
     return this.handleResponse(response);
   }
 
@@ -69,23 +64,14 @@ export class HttpClient {
   }
 
   async put<T, B>(url: string, body: B): Promise<T> {
+    const headers = await this.getHeader();
     const response = await fetch(`${this.baseUrl}/${url}`, {
+      headers: headers,
       method: "PUT",
       body: JSON.stringify(body),
     });
-
     return this.handleResponse(response);
   }
-
-  async patch<T, B>(url: string, body: B): Promise<T> {
-    const response = await fetch(`${this.baseUrl}/${url}`, {
-      method: "PATCH",
-      body: JSON.stringify(body),
-    });
-
-    return this.handleResponse(response);
-  }
-
   async delete<T>(url: string): Promise<T> {
     const response = await fetch(`${this.baseUrl}/${url}`, {
       method: "DELETE",

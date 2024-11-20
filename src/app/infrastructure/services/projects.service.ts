@@ -5,8 +5,8 @@ import { IProjectsRequest } from "@/app/core/application/dto/projects/projects-r
 export class ProjectsService{
     private httpClient: HttpClient;
 
-    constructor(){
-        this.httpClient = new HttpClient();
+    constructor(baseUrl?: string){
+        this.httpClient = new HttpClient(baseUrl);
     }
 
     async findAllProjects(page: number, size: number){
@@ -19,9 +19,9 @@ export class ProjectsService{
         }
     }
 
-    async createProjects(url:string, body:IProjectsRequest){
+    async createProjects(body:IProjectsRequest){
         try{
-            const newProject = await this.httpClient.post(url,body);
+            const newProject = await this.httpClient.post('projects',body);
             alert('Se creo exitosamente');
             return newProject;
         }catch(error){

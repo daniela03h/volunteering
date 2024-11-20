@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { IProjectsRequest } from "@/app/core/application/dto/projects/projects-request";
 import { ProjectsService } from "@/app/infrastructure/services/projects.service";
@@ -9,22 +9,18 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 
-interface IProps{
-  action:string;
+interface IProps {
+  action: string;
   projectSelected?: IProjectsRequest;
-  idProject?: number
-  propFunction: ()=>void
+  idProject?: number;
+  propFunction: () => void;
 }
 
-const projectsService = new ProjectsService()
+const projectsService = new ProjectsService(`/api`);
 
 const projectsSchema = yup.object().shape({
-  title: yup
-    .string()
-    .required("El titulo es requerido"),
-  description: yup
-    .string()
-    .required("Descripcion del proyecto"),
+  title: yup.string().required("El titulo es requerido"),
+  description: yup.string().required("Descripcion del proyecto"),
   startDate: yup
     .date()
     .required("La fecha de inicio del proyecto es requerida")
@@ -33,12 +29,16 @@ const projectsSchema = yup.object().shape({
     .date()
     .required("La fecha de finalización del proyecto es requerida")
     .min(
-      yup.ref('startDate'), 
+      yup.ref("startDate"),
       "La fecha de fin no puede ser anterior a la fecha de inicio"
-    )
+    ),
 });
 
-export const ProjectsForm:React.FC<IProps> = ({action, idProject, propFunction}) => {
+export const ProjectsForm: React.FC<IProps> = ({
+  action,
+  idProject,
+  propFunction,
+}) => {
   const {
     control,
     handleSubmit,
@@ -50,23 +50,28 @@ export const ProjectsForm:React.FC<IProps> = ({action, idProject, propFunction})
   });
   const router = useRouter();
 
-  const handlePost = async (data :IProjectsRequest)=>{    
-    await projectsService.createProjects('projects',data);
+  const handlePost = async (data: IProjectsRequest) => {
+    await projectsService.createProjects(data);
     propFunction();
     router.refresh();
-  } 
+  };
 
-  const handleEdit = async (data:IProjectsRequest) =>{
-    await projectsService.editProject('projects',idProject!, data);
+  const handleEdit = async (data: IProjectsRequest) => {
+    await projectsService.editProject("projects", idProject!, data);
     propFunction();
     router.refresh();
-  }
-  
-const onSubmit = action === 'add' ? handlePost : handleEdit;
+  };
+
+  const onSubmit = action === "add" ? handlePost : handleEdit;
 
   return (
-    <form className="w-full max-w-sm mx-auto p-4 space-y-4" onSubmit={handleSubmit(onSubmit)}>
-      <h2 className="text-2xl font-semibold  text-center">{action === 'add' ? 'Publicar' : 'Editar'} proyecto</h2>
+    <form
+      className="w-full max-w-sm mx-auto p-4 space-y-4"
+      onSubmit={handleSubmit(onSubmit)}
+    >
+      <h2 className="text-2xl font-semibold  text-center">
+        {action === "add" ? "Publicar" : "Editar"} proyecto
+      </h2>
       <FormField<IProjectsRequest>
         control={control}
         type="text"
@@ -97,7 +102,10 @@ const onSubmit = action === 'add' ? handlePost : handleEdit;
         name="endDate"
         error={errors.endDate}
       />
-      <Button text={action === 'add' ? 'Publicar' : 'Editar'} className="w-full"/>
+      <Button
+        text={action === "add" ? "Publicar" : "Editar"}
+        className="w-full"
+      />
     </form>
   );
 };

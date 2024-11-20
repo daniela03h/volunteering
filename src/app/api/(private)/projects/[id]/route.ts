@@ -1,10 +1,10 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { HttpClient } from "@/app/infrastructure/utils";
 
 const url = `https://communnityvolunteering-production.up.railway.app/api/v1/projects`;
 const client = new HttpClient();
 export async function DELETE(
-  _request: Request,
+  _request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   const headers = await client.getHeader();

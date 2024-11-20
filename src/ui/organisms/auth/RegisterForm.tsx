@@ -25,12 +25,6 @@ const registerSchema = yup.object().shape({
   name: yup.string().required("El nombre del usuario es obligatoria"),
   role: yup.string().required("El rol es obligatorio"),
   photo: yup.mixed<File>(),
-  // .test('fileSize', 'El archivo es demasiado grande', value => {
-  //   return value && value.size <= 204800;
-  // })
-  // .test('fileType', 'Solo se permiten archivos JPG o PNG', value => {
-  //   return value && !['image/jpeg', 'image/png', 'image/jpg', 'image/gif'].includes(value.type);
-  // })
 });
 
 export const RegisterForm = () => {

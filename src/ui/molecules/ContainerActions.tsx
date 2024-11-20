@@ -12,7 +12,7 @@ interface ITdActions {
   data: IProjectsData;
 }
 
-const useProjectsService = new ProjectsService();
+const useProjectsService = new ProjectsService('/api');
 
 export const ContainerActions: React.FC<ITdActions> = ({ data }) => {
   const [modal, setModal] = useState(false);
