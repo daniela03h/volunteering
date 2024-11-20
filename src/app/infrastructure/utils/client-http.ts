@@ -17,7 +17,7 @@ export class HttpClient {
 
     const headers: HeadersInit = {};
     if (formData === false) {
-      headers["Content-Type"] = "application/json";
+      headers["Content-Type"] = "Application/json";
     }
 
     if (session?.user?.token) {
@@ -52,7 +52,7 @@ export class HttpClient {
 
   async post<T, B>(url: string, body: B): Promise<T> {
     let headers = {}
-    if(typeof window === undefined) { // Valida que el codigo este ejecutandose en el servidor
+    if(typeof window === undefined || url.includes('login')) { // Valida que el codigo este ejecutandose en el servidor
       headers = await this.getHeader();
     }
     const response = await fetch(`${this.baseUrl}/${url}`, {
