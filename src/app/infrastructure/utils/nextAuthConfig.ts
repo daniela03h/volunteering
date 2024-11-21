@@ -1,6 +1,6 @@
 import { ILoginRequest } from "@/app/core/application/dto";
 import { AuthService } from "@/app/infrastructure/services/auth.service";
-import NextAuth, { NextAuthOptions, Session } from "next-auth";
+import { NextAuthOptions, Session } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 interface AuthToken {
@@ -26,7 +26,8 @@ export interface CustomSession extends Session {
   };
 }
 
-const authOptions: NextAuthOptions = {
+
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -89,6 +90,3 @@ const authOptions: NextAuthOptions = {
     },
   },
 };
-// export default NextAuth(authOptions);
-export const GET = NextAuth(authOptions);
-export const POST = NextAuth(authOptions);
