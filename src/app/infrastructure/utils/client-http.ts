@@ -1,5 +1,5 @@
-import { authOptions, CustomSession } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
+import { authOptions, CustomSession } from "./nextAuthConfig";
 
 const defaulUrl =
   "https://communnityvolunteering-production.up.railway.app/api/v1";
